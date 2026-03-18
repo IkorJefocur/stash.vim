@@ -179,7 +179,7 @@ You can write [:StashRestore](#stashrestore) and (optionally) [:StashDelete](#st
 function stash#InjectSessionBeforeBuffers(
    \ script,
    \ session_filename = v:this_session
-\ ) abort
+\ )
 ```
 
 Write a `script` (same format as for [stash#WriteSessionExtra](#writesessionextra)) in `<session_name>i.vim` (similarly to an extra file; "i" here means "injection"), then edit session script in such a way that this file will be sourced before any file is read, but after they are added. I.e. before `:edit`'s, `:enew`'s and so on, but after `:badd`'s.
