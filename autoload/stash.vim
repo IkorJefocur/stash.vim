@@ -152,7 +152,7 @@ function s:PrepareEmptyStashDirectory(dirname, overwrite = 0) abort
       call s:EnsureEmptyDirectory(a:dirname. '/' .s:named_dir)
       call s:EnsureEmptyDirectory(a:dirname. '/' .s:unnamed_dir)
    else
-      call mkdir(a:dirname, '', 0o700)
+      call mkdir(a:dirname, '', 0700)
       call mkdir(a:dirname. '/' .s:named_dir)
       call mkdir(a:dirname. '/' .s:unnamed_dir)
    endif
