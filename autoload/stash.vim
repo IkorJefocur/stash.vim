@@ -226,7 +226,7 @@ function s:RestoreBuffer(content_filename, lnum = line('.')) abort
       endif
    endif
 
-   doautocmd BufRead
+   silent doautocmd BufRead
 endfunction
 
 function s:SilentWrite(filename) abort
