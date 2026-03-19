@@ -222,3 +222,4 @@ Which buffers [:Stash](#stash) should save. The value is an argument for a `getb
 - Support `:set nohidden`.
 - Don't stash buffers which are going to be saved when `wq` triggers `ExitPre`.
 - Add buffers to and remove them from existing stash.
+- Lazy restore (buffer restores only when switching to it).
