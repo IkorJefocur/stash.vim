@@ -8,7 +8,7 @@ function stash#command_util#Path(filename = '') abort
          let path = fnamemodify(v:this_session, ':h'). '/' .path
       elseif !empty(g:stash#directory)
          if !isdirectory(g:stash#directory)
-            call mkdir(g:stash#directory, '', 0o700)
+            call mkdir(g:stash#directory, '', 0700)
          endif
          let path = g:stash#directory. '/' .path
       endif

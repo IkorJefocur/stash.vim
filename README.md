@@ -222,6 +222,7 @@ Which buffers [:Stash](#stash) should save. The value is an argument for a `getb
 - Support `:set nohidden`.
 - Don't stash buffers which are going to be saved when `wq` triggers `ExitPre`.
 - Add buffers to and remove them from existing stash.
+- Lazy restore (buffer restores only when switching to it).
 - Anything else you can suggest on [issues](https://github.com/IkorJefocur/stash.vim/issues) in a free form.
 
 *If you like this project and want a new features to come up, consider [donating](./SPONSOR.md).*
