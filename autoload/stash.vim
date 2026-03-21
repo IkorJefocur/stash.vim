@@ -40,8 +40,12 @@ function stash#Restore(filename, optional = 0, name_unnamed = 0)
    try
       let named_dir = a:filename. '/' .s:named_dir
       let unnamed_dir = a:filename. '/' .s:unnamed_dir
-      if !a:optional && !(isdirectory(named_dir) && isdirectory(unnamed_dir))
-         echoerr 'E484: Cannot open stash directory'
+      if !(isdirectory(named_dir) && isdirectory(unnamed_dir))
+         if a:optional
+            return
+         else
+            echoerr 'E484: Cannot open stash directory'
+         endif
       endif
 
       let current_buffer = bufnr()
