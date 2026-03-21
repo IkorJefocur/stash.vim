@@ -15,7 +15,7 @@ function stash#Stash(
       let exceptions = []
 
       for bufinfo in getbufinfo(a:buffer_filter)
-         keepjumps execute 'buffer ' .bufinfo.bufnr
+         execute 'keepjumps buffer ' .bufinfo.bufnr
          if !&modifiable
             continue
          endif
@@ -28,7 +28,7 @@ function stash#Stash(
       endfor
 
       if bufexists(current_buffer)
-         keepjumps execute 'buffer ' .current_buffer
+         execute 'keepjumps buffer ' .current_buffer
       endif
       if !empty(exceptions)
          echoerr join(exceptions, '\n')
@@ -65,7 +65,7 @@ function stash#Restore(filename, optional = 0, name_unnamed = 0)
          endfor
       endfor
 
-      keepjumps execute 'buffer ' .current_buffer
+      execute 'keepjumps buffer ' .current_buffer
       if !empty(exceptions)
          echoerr join(exceptions, '\n')
       endif
@@ -85,7 +85,7 @@ function stash#Unname()
 
       for bufinfo in getbufinfo()
          if getbufvar(bufinfo.bufnr, 'stash__is_unnamed', 0)
-            keepjumps execute 'buffer ' .bufinfo.bufnr
+            execute 'keepjumps buffer ' .bufinfo.bufnr
             try
                0file
                silent execute 'bwipeout ' .s:Bufnr(bufinfo.name)
@@ -96,7 +96,7 @@ function stash#Unname()
          endif
       endfor
 
-      keepjumps execute 'buffer ' .current_buffer
+      execute 'keepjumps buffer ' .current_buffer
       if !empty(exceptions)
          echoerr join(exceptions, '\n')
       endif
@@ -200,7 +200,7 @@ function s:RestoreFile(filename, content_filename, name_unnamed = 0) abort
       let bufnr = s:Bufnr(filename)
       let lnum = getbufinfo(bufnr)[0].lnum
       call setbufvar(bufnr, '&buftype', 'nofile')
-      keepjumps execute 'buffer ' .bufnr
+      execute 'keepjumps buffer ' .bufnr
       call s:RestoreBuffer(a:content_filename, lnum)
    endif
 
@@ -221,7 +221,7 @@ function s:RestoreBuffer(content_filename, lnum = line('.')) abort
    finally
       setlocal buftype=
    endtry
-   keepjumps execute a:lnum
+   execute 'keepjumps ' .a:lnum
 
    if &undofile
       let undo_path = undofile(a:content_filename)

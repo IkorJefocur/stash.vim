@@ -1,12 +1,12 @@
 function stash#revert_modifications#RevertModifications()
    let current_buffer = bufnr()
    for bufinfo in getbufinfo(#{buflisted: 1, bufmodified: 1})
-      keepjumps execute 'buffer ' .bufinfo.bufnr
+      execute 'keepjumps buffer ' .bufinfo.bufnr
       let undotree = undotree()
       let seq = s:UndoLastSaveSeq(undotree.entries, undotree.save_last)
       execute 'undo ' .seq
    endfor
-   keepjumps execute 'buffer ' .current_buffer
+   execute 'keepjumps buffer ' .current_buffer
 endfunction
 
 function s:UndoLastSaveSeq(entries, save_last)
