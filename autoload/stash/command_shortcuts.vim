@@ -27,4 +27,7 @@ function stash#command_shortcuts#PostEnter(filename = '')
    execute 'StashRestore! ' .filename
    silent StashUnname
    execute 'StashDelete ' .filename
+   if bufname() == '' && !&modified && line('$') <= 1 && getline(1) == ''
+      silent bwipeout
+   endif
 endfunction
