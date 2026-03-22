@@ -55,8 +55,7 @@ function stash#Restore(filename, optional = 0, name_unnamed = 0)
          \ s:CollectRestoreListInteractively(named_dir, unnamed_dir)
 
       for [index, dirname] in [[0, named_dir], [1, unnamed_dir]]
-         for [content_filename, target] in restore_list[index]
-            let content_path = dirname. '/' .content_filename
+         for [content_path, target] in restore_list[index]
             try
                call s:RestoreFile(target, content_path, a:name_unnamed)
             catch
@@ -106,12 +105,24 @@ endfunction
 function s:CollectRestoreListInteractively(named_dir, unnamed_dir) abort
    let result = []
    for [named, dirname] in [[1, a:named_dir], [0, a:unnamed_dir]]
+      let dirname = fnamemodify(dirname, ':p')
+      let files = readdir(dirname)
+      let undo_files = {}
+      for filename in files
+         let undo_files[undofile(dirname .filename)] = 0
+      endfor
+
       let directory_result = []
-      for filename in readdir(dirname)
+      for filename in files
+         let path = dirname .filename
+         if has_key(undo_files, path)
+            continue
+         endif
+
          let target = named ? s:SourcePath(filename) : ''
          let variant = s:ConfirmRestore(target)
          if variant == s:restore_variants.yes
-            let directory_result += [[filename, target]]
+            let directory_result += [[path, target]]
          elseif variant == s:restore_variants.cancel
             return [[], []]
          endif
