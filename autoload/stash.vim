@@ -15,7 +15,7 @@ function stash#Stash(
       let exceptions = []
 
       for bufinfo in getbufinfo(a:buffer_filter)
-         keepjumps execute 'buffer ' .bufinfo.bufnr
+         execute 'keepjumps buffer ' .bufinfo.bufnr
          if !&modifiable
             continue
          endif
@@ -28,7 +28,7 @@ function stash#Stash(
       endfor
 
       if bufexists(current_buffer)
-         keepjumps execute 'buffer ' .current_buffer
+         execute 'keepjumps buffer ' .current_buffer
       endif
       if !empty(exceptions)
          echoerr join(exceptions, '\n')
@@ -40,8 +40,12 @@ function stash#Restore(filename, optional = 0, name_unnamed = 0)
    try
       let named_dir = a:filename. '/' .s:named_dir
       let unnamed_dir = a:filename. '/' .s:unnamed_dir
-      if !a:optional && !(isdirectory(named_dir) && isdirectory(unnamed_dir))
-         echoerr 'E484: Cannot open stash directory'
+      if !(isdirectory(named_dir) && isdirectory(unnamed_dir))
+         if a:optional
+            return
+         else
+            echoerr 'E484: Cannot open stash directory'
+         endif
       endif
 
       let current_buffer = bufnr()
@@ -51,8 +55,7 @@ function stash#Restore(filename, optional = 0, name_unnamed = 0)
          \ s:CollectRestoreListInteractively(named_dir, unnamed_dir)
 
       for [index, dirname] in [[0, named_dir], [1, unnamed_dir]]
-         for [content_filename, target] in restore_list[index]
-            let content_path = dirname. '/' .content_filename
+         for [content_path, target] in restore_list[index]
             try
                call s:RestoreFile(target, content_path, a:name_unnamed)
             catch
@@ -61,7 +64,7 @@ function stash#Restore(filename, optional = 0, name_unnamed = 0)
          endfor
       endfor
 
-      keepjumps execute 'buffer ' .current_buffer
+      execute 'keepjumps buffer ' .current_buffer
       if !empty(exceptions)
          echoerr join(exceptions, '\n')
       endif
@@ -81,7 +84,7 @@ function stash#Unname()
 
       for bufinfo in getbufinfo()
          if getbufvar(bufinfo.bufnr, 'stash__is_unnamed', 0)
-            keepjumps execute 'buffer ' .bufinfo.bufnr
+            execute 'keepjumps buffer ' .bufinfo.bufnr
             try
                0file
                silent execute 'bwipeout ' .s:Bufnr(bufinfo.name)
@@ -92,7 +95,7 @@ function stash#Unname()
          endif
       endfor
 
-      keepjumps execute 'buffer ' .current_buffer
+      execute 'keepjumps buffer ' .current_buffer
       if !empty(exceptions)
          echoerr join(exceptions, '\n')
       endif
@@ -102,12 +105,24 @@ endfunction
 function s:CollectRestoreListInteractively(named_dir, unnamed_dir) abort
    let result = []
    for [named, dirname] in [[1, a:named_dir], [0, a:unnamed_dir]]
+      let dirname = fnamemodify(dirname, ':p')
+      let files = readdir(dirname)
+      let undo_files = {}
+      for filename in files
+         let undo_files[undofile(dirname .filename)] = 0
+      endfor
+
       let directory_result = []
-      for filename in readdir(dirname)
+      for filename in files
+         let path = dirname .filename
+         if has_key(undo_files, path)
+            continue
+         endif
+
          let target = named ? s:SourcePath(filename) : ''
          let variant = s:ConfirmRestore(target)
          if variant == s:restore_variants.yes
-            let directory_result += [[filename, target]]
+            let directory_result += [[path, target]]
          elseif variant == s:restore_variants.cancel
             return [[], []]
          endif
@@ -196,7 +211,7 @@ function s:RestoreFile(filename, content_filename, name_unnamed = 0) abort
       let bufnr = s:Bufnr(filename)
       let lnum = getbufinfo(bufnr)[0].lnum
       call setbufvar(bufnr, '&buftype', 'nofile')
-      keepjumps execute 'buffer ' .bufnr
+      execute 'keepjumps buffer ' .bufnr
       call s:RestoreBuffer(a:content_filename, lnum)
    endif
 
@@ -217,7 +232,7 @@ function s:RestoreBuffer(content_filename, lnum = line('.')) abort
    finally
       setlocal buftype=
    endtry
-   keepjumps execute a:lnum
+   execute 'keepjumps ' .a:lnum
 
    if &undofile
       let undo_path = undofile(a:content_filename)
