@@ -225,4 +225,4 @@ Which buffers [:Stash](#stash) should save. The value is an argument for a `getb
 - Lazy restore (buffer restores only when switching to it).
 - Anything else you can suggest on [issues](https://github.com/IkorJefocur/stash.vim/issues) in a free form.
 
-*If you like this project and want a new features to come up, consider [donating](./SPONSOR.md).*
+*If you like this project and want a new features to come up, consider [donating](https://github.com/IkorJefocur/IkorJefocur/blob/master/SPONSOR.md).*
